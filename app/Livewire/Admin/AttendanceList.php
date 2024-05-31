@@ -16,5 +16,9 @@ class AttendanceList extends Component
 
     }
 
-   
+    public function asss(){
+        $this->render();
+    }
+
+
 }

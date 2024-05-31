@@ -1,39 +1,45 @@
 <?php
 
 namespace App\Livewire\User;
-use App\Models\User as user;
+
+use App\Models\User;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Illuminate\Support\Facades\Auth;
+
 class Profile extends Component
 {
     use WithFileUploads;
-    public $search, $name, $section, $year, $photo;
+
+    public $name, $section, $year, $photo;
     public $userId;
+
     public function render()
     {
         $user = Auth::user();
         return view('livewire.user.profile', [
             'user' => $user
         ]);
-
     }
+
     public function mount()
     {
         $user = Auth::user();
+        $this->userId = $user->id; // Store the user's ID
         $this->name = $user->name;
         $this->section = $user->section;
         $this->year = $user->year;
     }
-    public function update($id)
+
+    public function update()
     {
+        $this->validate([
+            'photo' => 'nullable|image|max:1024',
+        ]);
 
-
-
-        $user = User::find($id);
+        $user = User::find($this->userId);
 
         if ($user) {
-
             if (!is_null($this->name)) {
                 $user->name = $this->name;
             }
@@ -51,11 +57,9 @@ class Profile extends Component
 
             $user->save();
 
-
+            session()->flash('message', 'Profile updated successfully.');
         } else {
             session()->flash('error', 'User not found.');
         }
     }
-
-
 }
